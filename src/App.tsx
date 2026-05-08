@@ -203,9 +203,9 @@ export default function App() {
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-[100dvh] md:min-h-[85vh] flex flex-col justify-center items-center text-center px-4 md:px-5 pt-28 pb-16 relative z-10 w-full mx-auto">
-        <div className="absolute inset-0 bg-[url('https://www.camaraaruja.sp.gov.br/Arquivos/Noticias//2014/11/1947-1.jpg')] bg-cover bg-center bg-fixed z-[-2]" />
-        <div className="absolute inset-0 bg-black/70 z-[-1]" />
+      <section className="flex flex-col justify-center items-center text-center px-4 md:px-5 pt-32 pb-20 relative z-10 w-full mx-auto" style={{ minHeight: '80vh' }}>
+        <div className="absolute inset-0 z-[-2] hero-bg-aruja" />
+        <div className="absolute inset-0 z-[-1] hero-overlay-dark" />
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

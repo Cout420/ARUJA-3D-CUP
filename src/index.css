@@ -10,7 +10,21 @@
   --color-brazil-gold: #ffcc00;
 }
 
+/* Custom Mobile Hero Background Fix */
+.hero-bg-aruja {
+  background-image: url('https://www.camaraaruja.sp.gov.br/Arquivos/Noticias//2014/11/1947-1.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: scroll !important;
+  object-fit: cover !important;
+}
+
+.hero-overlay-dark {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
 html, body {
+
   overflow-x: hidden;
   scroll-behavior: smooth;
   background-color: #fafafa;
