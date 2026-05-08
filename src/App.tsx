@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'motion/react';
 import { 
   Building2, 
   CirclePlay,
@@ -8,7 +8,8 @@ import {
   Timer,
   CheckCircle2,
   Trophy,
-  Flag
+  Flag,
+  Settings
 } from 'lucide-react';
 
 const WHATSAPP_NUMBER = "5511930192510"; 
@@ -32,6 +33,26 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
   </svg>
+);
+
+const Preloader = () => (
+  <motion.div
+    initial={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.5, ease: "easeOut" }}
+    className="fixed inset-0 z-[100] bg-[#fafafa] flex flex-col items-center justify-center"
+  >
+    <motion.div 
+      animate={{ rotate: 360 }}
+      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+      className="text-brazil-green mb-4"
+    >
+      <Settings className="w-16 h-16" />
+    </motion.div>
+    <div className="flex items-center gap-2 font-heading font-black text-xl text-slate-800 tracking-tighter">
+      ARUJÁ<span className="text-brazil-green">.3D</span> CUP 🇧🇷
+    </div>
+  </motion.div>
 );
 
 const Typewriter = ({ text }: { text: string }) => {
@@ -83,7 +104,7 @@ const TiltCard = ({ children, className }: any) => {
 
   return (
     <motion.div
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d", willChange: "transform" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={className}
@@ -133,15 +154,28 @@ const Countdown = () => {
 
 export default function App() {
   const [scrollY, setScrollY] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    
+    // Simulate loading time to show preloader
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-slate-800 font-sans selection:bg-brazil-green selection:text-white relative overflow-hidden">
+      <AnimatePresence>
+        {isLoading && <Preloader />}
+      </AnimatePresence>
       
       {/* Floating Elements on scroll */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -153,23 +187,23 @@ export default function App() {
       </div>
 
       {/* Header */}
-      <header className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 px-5 py-3 md:py-4 flex justify-between items-center">
-        <div className="text-slate-900 font-heading font-black text-xl md:text-2xl tracking-tighter">
+      <header className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 px-3 sm:px-5 py-3 md:py-4 flex justify-between items-center">
+        <div className="text-slate-900 font-heading font-black text-lg sm:text-xl md:text-2xl tracking-tighter shrink-0">
           ARUJÁ<span className="text-brazil-green">.3D</span> CUP
         </div>
         <a 
           href={WHATSAPP_LINK_ATACADO}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-gradient-to-r from-brazil-green to-brazil-green-dark text-white font-bold px-6 py-2 rounded-full hover:shadow-lg transition-all text-sm md:text-base flex items-center gap-2 hover:-translate-y-0.5"
+          className="bg-gradient-to-r from-brazil-green to-brazil-green-dark text-white font-bold px-3 sm:px-6 py-2 rounded-full hover:shadow-lg transition-all text-xs sm:text-sm md:text-base flex items-center gap-1.5 hover:-translate-y-0.5 shrink-0 whitespace-nowrap"
         >
-          <WhatsAppIcon className="w-4 h-4 hidden sm:block" />
+          <WhatsAppIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           ATACADO & VAREJO 🇧🇷
         </a>
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-[85vh] flex flex-col justify-center items-center text-center px-5 pt-32 pb-16 relative z-10 w-full mx-auto">
+      <section className="min-h-[100dvh] md:min-h-[85vh] flex flex-col justify-center items-center text-center px-4 md:px-5 pt-28 pb-16 relative z-10 w-full mx-auto">
         <div className="absolute inset-0 bg-[url('https://www.camaraaruja.sp.gov.br/Arquivos/Noticias//2014/11/1947-1.jpg')] bg-cover bg-center bg-fixed z-[-2]" />
         <div className="absolute inset-0 bg-black/70 z-[-1]" />
 
@@ -177,21 +211,21 @@ export default function App() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brazil-green/30 text-white font-bold text-sm mb-6 border border-brazil-green/50 backdrop-blur-md"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brazil-green/30 text-white font-bold text-xs sm:text-sm mb-6 border border-brazil-green/50 backdrop-blur-md mt-4"
         >
-          <Timer className="w-4 h-4 text-brazil-yellow" /> Prepare-se para a Copa 2026
+          <Timer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brazil-yellow" /> Prepare-se para a Copa 2026
         </motion.div>
 
         <motion.h1 
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="font-heading text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black text-white leading-[1.1] tracking-tight mb-8 drop-shadow-xl max-w-5xl mx-auto"
+          className="font-heading text-[12vw] leading-tight sm:leading-[1.1] sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black text-white tracking-tight mb-6 sm:mb-8 drop-shadow-xl max-w-5xl mx-auto"
         >
           A MAIOR PRECISÃO 3D DE <span className="text-brazil-yellow drop-shadow-[0_4px_20px_rgba(255,204,0,0.4)]">ARUJÁ</span>
         </motion.h1>
         
-        <div className="text-gray-100 text-xl md:text-[1.6rem] font-medium max-w-4xl mx-auto mb-16 leading-relaxed min-h-[80px]">
+        <div className="text-gray-100 text-lg sm:text-xl md:text-[1.6rem] font-medium max-w-4xl mx-auto mb-10 sm:mb-16 leading-relaxed min-h-[60px] sm:min-h-[80px]">
           <Typewriter text="Produzimos para você colecionador e para sua empresa lucrar na Copa." />
         </div>
         
@@ -209,7 +243,7 @@ export default function App() {
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-b2b p-8 md:p-12 rounded-3xl shadow-[0_20px_40px_rgba(255,204,0,0.15)] flex flex-col md:flex-row items-center justify-between gap-10"
+          className="bg-gradient-to-br from-[#f5f7f5] to-brazil-yellow/10 bg-white p-6 sm:p-8 md:p-12 rounded-3xl shadow-[0_20px_40px_rgba(255,204,0,0.15)] flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10 border border-brazil-yellow/20"
         >
           <div className="flex-1 text-center md:text-left">
             <h2 className="font-heading text-3xl md:text-4xl font-black text-slate-800 mb-4 uppercase">
@@ -264,7 +298,7 @@ export default function App() {
             <div className="aspect-video bg-slate-900 rounded-[18px] relative flex items-center justify-center group overflow-hidden cursor-pointer shadow-inner">
               <video 
                 src="https://res.cloudinary.com/dhsn2oxv5/video/upload/v1778255687/snaptik_7621549487189691666_hd_xotioj.mp4" 
-                autoPlay muted loop playsInline 
+                autoPlay muted loop playsInline preload="metadata"
                 className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
@@ -279,7 +313,7 @@ export default function App() {
             <div className="aspect-video bg-slate-900 rounded-[18px] relative flex items-center justify-center group overflow-hidden cursor-pointer shadow-inner">
               <video 
                 src="https://res.cloudinary.com/dhsn2oxv5/video/upload/v1778255659/snaptik_7620249642856451348_hd_nixjaa.mp4" 
-                autoPlay muted loop playsInline 
+                autoPlay muted loop playsInline preload="metadata"
                 className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
@@ -332,6 +366,7 @@ export default function App() {
                          <img 
                             src={product.image} 
                             alt={product.colorName} 
+                            loading="lazy"
                             className="w-full h-full object-contain drop-shadow-2xl z-10" 
                           />
                       </div>
@@ -481,15 +516,15 @@ export default function App() {
       </footer>
 
       {/* Floating Modern CTA */}
-      <div className="fixed bottom-6 right-6 lg:bottom-10 lg:right-10 z-50">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 lg:bottom-10 lg:right-10 z-50 pointer-events-none">
         <a 
           href={WHATSAPP_LINK_ATACADO}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-[#25d366] text-white p-4 md:px-6 md:py-4 rounded-full shadow-[0_15px_30px_rgba(37,211,102,0.4)] flex items-center gap-3 hover:bg-[#1fad52] transition-colors animate-pulse-scale relative"
+          className="bg-[#25d366] text-white p-3 sm:p-4 md:px-6 md:py-4 rounded-full shadow-[0_15px_30px_rgba(37,211,102,0.4)] flex items-center gap-2 sm:gap-3 hover:bg-[#1fad52] transition-colors animate-pulse-scale relative pointer-events-auto max-w-[200px] sm:max-w-none"
         >
-          <WhatsAppIcon className="w-8 h-8" />
-          <span className="hidden sm:block font-bold text-lg tracking-wide shadow-sm">
+          <WhatsAppIcon className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+          <span className="block font-bold text-xs sm:text-lg tracking-wide shadow-sm leading-tight text-left">
             Quero saber os preços para revenda em Arujá! 🇧🇷
           </span>
           <div className="absolute -top-1 -right-1 flex h-4 w-4">
