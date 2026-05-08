@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Montserrat:wght@800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Montserrat", sans-serif;
+  --color-brazil-green: #009b3a;
+  --color-brazil-green-dark: #006b29;
+  --color-brazil-yellow: #fedf00;
+  --color-brazil-gold: #ffcc00;
+}
+
+html, body {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  background-color: #fafafa;
+  color: #1e293b;
+}
+
+@keyframes pulse-scale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.animate-pulse-scale {
+  animation: pulse-scale 2s infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+.floating-icon {
+  animation: float-slow 6s ease-in-out infinite;
+}
+.floating-icon-delayed {
+  animation: float-slow 7s ease-in-out infinite 3.5s;
+}
+
+@keyframes button-shine {
+  0%, 100% { filter: brightness(100%); }
+  50% { filter: brightness(120%); box-shadow: 0 0 20px rgba(255, 204, 0, 0.8); }
+}
+.btn-gold-shine:hover {
+  animation: button-shine 1.5s infinite;
+  background: var(--color-brazil-gold);
+  color: black;
+}
+
+.chat-bubble::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: -10px;
+  border-style: solid;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent white transparent transparent;
+}
+.chat-bubble-right::before {
+  left: auto;
+  right: -10px;
+  border-width: 10px 0 10px 10px;
+  border-color: transparent transparent transparent white;
+}
